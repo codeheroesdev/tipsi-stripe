@@ -10,12 +10,13 @@ import CardFormScreen from './scenes/CardFormScreen'
 import CustomCardScreen from './scenes/CustomCardScreen'
 import CustomBankScreen from './scenes/CustomBankScreen'
 import CardTextFieldScreen from './scenes/CardTextFieldScreen'
+import PaymentIntentScreen from './scenes/PaymentIntentScreen'
 import SourceScreen from './scenes/SourceScreen'
 import testID from './utils/testID'
 
 stripe.setOptions({
-  publishableKey: '<PUBLISHABLE_KEY>',
-  merchantId: '<MERCHANT_ID>',
+  publishableKey: '',
+  merchantId: '',
   androidPayMode: 'test',
 })
 
@@ -29,6 +30,7 @@ export default class Root extends PureComponent {
         android: AndroidPayScreen,
       }),
       CardFormScreen,
+      PaymentIntentScreen,
       CustomCardScreen,
       CustomBankScreen,
       CardTextFieldScreen,
@@ -38,14 +40,12 @@ export default class Root extends PureComponent {
 
   getCurrentScene = () => this.state.routes[this.state.index]
 
-  handleChangeTab = (index) => {
+  handleChangeTab = index => {
     this.drawer.closeDrawer()
     this.setState({ index })
   }
 
-  handleDrawerRef = (node) => {
-    this.drawer = node
-  }
+  handleDrawerRef = node => (this.drawer = node)
 
   handleMenuPress = () => {
     if (this.state.isDrawerOpen) {
@@ -84,14 +84,18 @@ export default class Root extends PureComponent {
     return (
       <View style={styles.container}>
         <View style={styles.statusbar} />
-        <Header title={`Example: ${Scene.title}`} onMenuPress={this.handleMenuPress} />
+        <Header
+          title={`Example: ${Scene.title}`}
+          onMenuPress={this.handleMenuPress}
+        />
         <DrawerLayout
           drawerWidth={200}
           drawerPosition={DrawerLayout.positions.Left}
           renderNavigationView={this.renderNavigation}
           onDrawerOpen={this.handleDrawerOpen}
           onDrawerClose={this.handleDrawerClose}
-          ref={this.handleDrawerRef}>
+          ref={this.handleDrawerRef}
+        >
           <Scene />
         </DrawerLayout>
       </View>

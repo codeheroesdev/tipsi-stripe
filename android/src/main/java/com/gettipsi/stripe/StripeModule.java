@@ -312,6 +312,46 @@ public class StripeModule extends ReactContextBaseJavaModule {
     });
   }
 
+  @ReactMethod
+  public void paymentWithPaymentIntent(final ReadableMap options, final Promise promise) {
+    try {
+      ArgCheck.nonNull(mStripe);
+      ArgCheck.notEmptyString(mPublicKey);
+
+      Boolean clientSecret = params.hasKey("clientSecret") && params.getString("clientSecret")
+      Boolean redirectUrl = params.hasKey("redirectUrl") && params.getString("redirectUrl")
+
+      PaymentMethodCreateParams.Card paymentMethodParamsCard = mCardInputWidget.getCard().toPaymentMethodParamsCard();
+      PaymentMethodCreateParams cardPaymentMethodCreateParams = PaymentMethodCreateParams.create(paymentMethodParamsCard, null);
+
+      PaymentMethodCreateParams paymentMethodCreateParams = PaymentMethodCreateParams.create(card, null);
+      PaymentIntentParams paymentIntentParams = PaymentIntentParams.createConfirmPaymentIntentWithPaymentMethodCreateParams(
+        paymentMethodCreateParams,
+        clientSecret,
+        redirectUrl
+      );
+
+      // Do not call on the UI thread or your app will crash
+      PaymentIntent paymentIntent = mStripe.confirmPaymentIntentSynchronous(paymentIntentParams, mPublicKey);
+
+      PaymentIntent.Status status = PaymentIntent.Status.fromCode(paymentIntent.getStatus());
+      if (PaymentIntent.Status.RequiresAction == status) {
+          Uri redirectUrl = paymentIntent.getRedirectUrl();
+          if (redirectUrl != null) {
+            Intent browserIntent = new Intent(currentActivity, OpenBrowserActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                .putExtra(OpenBrowserActivity.EXTRA_URL, redirectUrl);
+            currentActivity.startActivity(browserIntent);
+          }
+      } else {
+        // Show success message
+      }
+
+    } catch (Exception e) {
+      promise.reject(toErrorCode(e), e.getMessage());
+    }
+  }
+
   void processRedirect(@Nullable Uri redirectData) {
     if (mCreatedSource == null || mCreateSourcePromise == null) {
 

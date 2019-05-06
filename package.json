@@ -1,6 +1,6 @@
 {
   "name": "tipsi-stripe",
-  "version": "7.5.0",
+  "version": "7.6.0",
   "description": "React Native Stripe binding for iOS/Andriod platforms",
   "main": "src/index.js",
   "scripts": {
@@ -44,5 +44,10 @@
     "esm": "3.0.28",
     "prop-types": "15.6.1",
     "tape": "4.9.0"
+  },
+  "prettier": {
+    "semi": false,
+    "trailingComma": "es5",
+    "singleQuote": true
   }
 }

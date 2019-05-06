@@ -1,20 +1,25 @@
 # Use iOS 9 and above
 platform :ios, '9.0'
 
-# Specify Workspace
-workspace 'example'
-
 target 'example' do
   # Stripe
-  pod 'Stripe', '~> 14.0.0'
+  pod 'Stripe'
 
-  # Install additional dependencies
-  pod 'Firebase/Core'
-  pod 'Firebase/Auth'
-  pod 'Firebase/Crash'
-  pod 'Firebase/Database'
-  pod 'Firebase/Firestore'
-  pod 'Firebase/Messaging'
-  pod 'Firebase/Performance'
-  pod 'Firebase/Storage'
+  pod 'Yoga', :path => '../node_modules/react-native/ReactCommon/yoga'
+  pod 'React', :path => '../node_modules/react-native', :subspecs => [
+    'BatchedBridge', # Required For React Native 0.45.0+
+    'Core',
+    'DevSupport',
+    'RCTText',
+    'RCTGeolocation',
+    'RCTVibration',
+    'RCTNetwork',
+    'RCTWebSocket',
+    'RCTImage',
+    'RCTLinkingIOS',
+    'RCTSettings',
+    'RCTActionSheet',
+    'RCTAnimation',
+    # Add any other subspecs you want to use in your project
+  ]
 end
