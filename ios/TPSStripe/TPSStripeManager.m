@@ -473,26 +473,17 @@ RCT_EXPORT_METHOD(paymentWithPaymentIntent:(NSDictionary *)params
     }
 
     requestIsCompleted = NO;
-
-    STPPaymentMethodCardParams *cardParams = [STPPaymentMethodCardParams new];
-    STPPaymentMethodBillingDetails *billingDetails = [STPPaymentMethodBillingDetails new];
-
-    NSString* token = params[@"token"] ? params[@"token"] : @"";
-    cardParams.token = token;
-
-    STPPaymentMethodParams *paymentMethodParams = [STPPaymentMethodParams paramsWithCard:cardParams billingDetails:billingDetails metadata:nil];
+    promiseResolver = resolve;
+    promiseRejector = reject;
 
     NSString* clientSecret = params[@"clientSecret"] ? params[@"clientSecret"] : @"";
     NSString* redirectUrl = params[@"redirectUrl"] ? params[@"redirectUrl"] : @"";
 
     STPPaymentIntentParams *paymentIntentParams = [[STPPaymentIntentParams alloc] initWithClientSecret:clientSecret];
 
-    paymentIntentParams.paymentMethodParams = paymentMethodParams;
     paymentIntentParams.returnURL = redirectUrl;
 
     STPAPIClient* stripeAPIClient = [self newAPIClient];
-
-    printf("paymentWithPaymentIntent init was ok, starting confirmation\n");
 
     [stripeAPIClient confirmPaymentIntentWithParams:paymentIntentParams completion:^(STPPaymentIntent * _Nullable paymentIntent, NSError * error) {
         requestIsCompleted = YES;
@@ -502,9 +493,7 @@ RCT_EXPORT_METHOD(paymentWithPaymentIntent:(NSDictionary *)params
             NSDictionary *jsError = [errorCodes valueForKey:kErrorKeyApi];
             reject(jsError[kErrorKeyCode], error.localizedDescription, nil);
         } else {
-          printf("no errors\n");
           if (paymentIntent.status == STPPaymentIntentStatusRequiresAction) {
-            printf("paymentIntent.status is STPPaymentIntentStatusRequiresAction\n");
             // Note you must retain this for the duration of the redirect flow - it dismisses any presented view controller upon deallocation.
             self.redirectContext = [[STPRedirectContext alloc] initWithPaymentIntent:paymentIntent completion:^(NSString *clientSecret, NSError *redirectError) {
                 // Fetch the latest status of the Payment Intent if necessary
@@ -513,16 +502,14 @@ RCT_EXPORT_METHOD(paymentWithPaymentIntent:(NSDictionary *)params
                 }];
             }];
             if (self.redirectContext) {
-                printf("doing some redirect\n");
                 // opens SFSafariViewController to the necessary URL
                 [self.redirectContext startRedirectFlowFromViewController:RCTPresentedViewController()];
             } else {
               // This PaymentIntent action is not yet supported by the SDK.
-              NSDictionary *error = [errorCodes valueForKey:kErrorKeyBusy];
-              reject(error[kErrorKeyCode], error[kErrorKeyDescription], nil);
+              NSDictionary *jsError = [errorCodes valueForKey:kErrorKeyBusy];
+              [self rejectPromiseWithCode:jsError[kErrorKeyCode] message:error.localizedDescription];
             }
           } else {
-            printf("success message\n");
             resolve(nil);
           }
         }

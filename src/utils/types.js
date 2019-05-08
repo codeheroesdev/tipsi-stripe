@@ -194,5 +194,4 @@ export const createSourceWithParamsPropType = {
 export const paymentWithPaymentIntentPropType = {
   clientSecret: PropTypes.string.isRequired,
   redirectUrl: PropTypes.string.isRequired,
-  token: PropTypes.string.isRequired,
 }

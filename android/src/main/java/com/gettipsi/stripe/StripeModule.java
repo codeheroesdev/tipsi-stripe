@@ -328,15 +328,9 @@ public class StripeModule extends ReactContextBaseJavaModule {
 
             String clientSecret = Converters.getStringOrNull(params, "clientSecret");
             String redirectUrl = Converters.getStringOrNull(params, "redirectUrl");
-            String token = Converters.getStringOrNull(params, "token");
-
-            PaymentMethodCreateParams.Card paymentMethodParamsCard = PaymentMethodCreateParams.Card.create(token);
-
-            PaymentMethodCreateParams cardPaymentMethodCreateParams =
-                    PaymentMethodCreateParams.create(paymentMethodParamsCard, null);
 
             PaymentIntentParams paymentIntentParams = PaymentIntentParams.createConfirmPaymentIntentWithPaymentMethodCreateParams(
-                    cardPaymentMethodCreateParams,
+                    null,
                     clientSecret,
                     redirectUrl
             );

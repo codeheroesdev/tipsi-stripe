@@ -37,7 +37,6 @@ export default class CardFormScreen extends PureComponent {
       console.log('token', token)
 
       await stripe.paymentWithPaymentIntent({
-        token: token.tokenId,
         clientSecret: '', // clientSecret received from backend
         redirectUrl: 'https://google.com',
       })
