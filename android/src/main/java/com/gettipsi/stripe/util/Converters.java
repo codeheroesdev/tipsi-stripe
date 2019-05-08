@@ -64,11 +64,11 @@ public class Converters {
 
     billingContactMap.putString("emailAddress", emailAddress);
     shippingContactMap.putString("emailAddress", emailAddress);
-    
+
 
     extra.putMap("billingContact", billingContactMap);
     extra.putMap("shippingContact", shippingContactMap);
-    
+
     tokenMap.putMap("extra", extra);
 
     return tokenMap;
@@ -199,7 +199,8 @@ public class Converters {
       getValue(cardData, "funding"),
       getValue(cardData, "country"),
       getValue(cardData, "currency"),
-      getValue(cardData, "id")
+      getValue(cardData, "id"),
+      null
     );
   }
 
@@ -390,17 +391,18 @@ public class Converters {
   }
 
   public static BankAccount createBankAccount(ReadableMap accountData) {
-    BankAccount account = new BankAccount(
+    return new BankAccount(
       // required fields only
       accountData.getString("accountNumber"),
+      getValue(accountData, "accountHolderName"),
+      getValue(accountData, "accountHolderType"),
+      null,
       accountData.getString("countryCode"),
       accountData.getString("currency"),
-      getValue(accountData, "routingNumber", "")
+      getValue(accountData, "routingNumber", ""),
+      null,
+      null
     );
-    account.setAccountHolderName(getValue(accountData, "accountHolderName"));
-    account.setAccountHolderType(getValue(accountData, "accountHolderType"));
-
-    return account;
   }
 
   public static String getStringOrNull(@NonNull ReadableMap map, @NonNull String key) {

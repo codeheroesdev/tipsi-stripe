@@ -25,7 +25,6 @@ import com.stripe.android.Stripe;
 import com.stripe.android.TokenCallback;
 import com.stripe.android.model.PaymentIntent;
 import com.stripe.android.model.PaymentIntentParams;
-import com.stripe.android.model.PaymentMethodCreateParams;
 import com.stripe.android.model.Source;
 import com.stripe.android.model.SourceParams;
 import com.stripe.android.model.Token;
@@ -329,11 +328,12 @@ public class StripeModule extends ReactContextBaseJavaModule {
             String clientSecret = Converters.getStringOrNull(params, "clientSecret");
             String redirectUrl = Converters.getStringOrNull(params, "redirectUrl");
 
-            PaymentIntentParams paymentIntentParams = PaymentIntentParams.createConfirmPaymentIntentWithPaymentMethodCreateParams(
-                    null,
-                    clientSecret,
-                    redirectUrl
-            );
+            PaymentIntentParams paymentIntentParams =
+                    PaymentIntentParams.createConfirmPaymentIntentWithPaymentMethodCreateParams(
+                            null,
+                            clientSecret,
+                            redirectUrl
+                    );
 
             // Do not call on the UI thread or your app will crash
             PaymentIntent paymentIntent = mStripe.confirmPaymentIntentSynchronous(paymentIntentParams, mPublicKey);
