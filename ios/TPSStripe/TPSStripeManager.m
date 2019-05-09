@@ -504,7 +504,7 @@ RCT_EXPORT_METHOD(paymentWithPaymentIntent:(NSDictionary *)params
             if (self.redirectContext) {
                 // opens SFSafariViewController to the necessary URL
                 [self.redirectContext startRedirectFlowFromViewController:RCTPresentedViewController()];
-                resolve(nil)
+                resolve(nil);
             } else {
               // This PaymentIntent action is not yet supported by the SDK.
               NSDictionary *jsError = [errorCodes valueForKey:kErrorKeyBusy];
