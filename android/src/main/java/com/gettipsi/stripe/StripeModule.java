@@ -339,22 +339,22 @@ public class StripeModule extends ReactContextBaseJavaModule {
             PaymentIntent paymentIntent = mStripe.confirmPaymentIntentSynchronous(paymentIntentParams, mPublicKey);
 
             PaymentIntent.Status status = PaymentIntent.Status.fromCode(paymentIntent.getStatus());
-            if (PaymentIntent.Status.RequiresAction == status) {
-                Uri redirectURL = paymentIntent.getRedirectUrl();
-                if (redirectURL != null) {
-                    Intent browserIntent = new Intent(currentActivity, OpenBrowserActivity.class)
-                            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                            .putExtra(OpenBrowserActivity.EXTRA_URL, redirectURL);
+            if (PaymentIntent.Status.RequiresAction == status || PaymentIntent.Status.RequiresSourceAction == status) {
+                if (currentActivity == null) {
+                    promise.reject(
+                            getErrorCode(mErrorCodes, "activityUnavailable"),
+                            getDescription(mErrorCodes, "activityUnavailable")
+                    );
+                } else {
+                    Uri redirectURL = paymentIntent.getRedirectUrl();
+                    if (redirectURL != null) {
+                        Intent browserIntent = new Intent(currentActivity, OpenBrowserActivity.class)
+                                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                                .putExtra(OpenBrowserActivity.EXTRA_URL, redirectURL.toString());
 
-                    if (currentActivity == null) {
-                        promise.reject(
-                                getErrorCode(mErrorCodes, "activityUnavailable"),
-                                getDescription(mErrorCodes, "activityUnavailable")
-                        );
-                    } else {
                         currentActivity.startActivity(browserIntent);
+                        promise.resolve(null);
                     }
-
                 }
             } else {
                 promise.resolve(null);
