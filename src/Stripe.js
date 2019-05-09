@@ -184,7 +184,7 @@ class Stripe {
       'params',
       'Stripe.paymentWithPaymentIntent'
     )
-    StripeModule.paymentWithPaymentIntent(params)
+    return StripeModule.paymentWithPaymentIntent(params)
   }
 }
 
